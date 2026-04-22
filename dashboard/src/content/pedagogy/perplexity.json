@@ -1,0 +1,28 @@
+{
+  "id": "perplexity",
+  "name": "Perplexity",
+  "fullName": "Perplexity (Information-Theoretic Language Model Evaluation)",
+  "pillar": "Calibration",
+  "pillarNote": "Displayed in the Calibration view for v1. However, perplexity's primary use is as a Stability signal — it is most valuable when tracked over time to detect output distribution drift. A single reading has a narrow calibration-adjacent interpretation (how well-calibrated is the model's next-token distribution on this text). The full Stability pillar with drift detection is planned for v2.",
+  "whatItMeasures": "How predictable the text is to the language model, measured as the effective number of equally-likely next-token choices the model faces at each step. Lower means more predictable.",
+  "whyItMeasures": "The first three metrics (BLEU, ROUGE, BERTScore) all require a reference text. Perplexity is reference-free — it needs only the model and the text. This makes it trivially computable on any production output without maintaining a reference pipeline. The tradeoff: perplexity tells you whether the model expects this text, not whether the text is correct. A fluently hallucinating model produces low perplexity. The metric measures model confidence, not output quality.",
+  "regulatorQuestions": [
+    "What model computed the perplexity? Perplexity is model-specific; scores from different models on the same text are not comparable.",
+    "On what corpus was it computed? Perplexity depends heavily on the text distribution being evaluated.",
+    "What is the baseline for comparison? A single perplexity number is nearly uninterpretable without a deployment-time baseline or reference model comparison.",
+    "Is perplexity being paired with correctness evaluation? If not, the signal cannot be interpreted as quality regardless of direction.",
+    "How was the evaluation corpus sampled? A biased or unrepresentative sample produces a biased perplexity signal."
+  ],
+  "goodBadValues": {
+    "description": "Perplexity values are positive numbers with no upper bound. Lower means the model is less surprised. Values depend on the model, tokenizer, and text domain.",
+    "ranges": [
+      { "range": "Below 15", "interpretation": "Very confident predictions. Text closely matches the model's training distribution." },
+      { "range": "15 – 30", "interpretation": "Normal operation for well-trained models on standard English text." },
+      { "range": "30 – 100", "interpretation": "Elevated surprise. Possible domain shift, unusual vocabulary, or style mismatch." },
+      { "range": "Above 100", "interpretation": "The model is meaningfully surprised. Investigate for domain shift, data quality issues, or incoherent text." }
+    ],
+    "caveat": "These ranges are approximate for GPT-2 scale models on English text. Larger models produce lower perplexity on the same text. Never compare perplexity across different models or tokenizers."
+  },
+  "learnMore": "Perplexity measures how predictable text is to a language model. At each token position, the model predicts a probability distribution over the vocabulary. Perplexity exponentiates the negative average log-probability across all tokens: PPL = exp(−1/N × Σ log P(token_i | context)).\n\nThe branching-factor intuition: if perplexity is 10, the model behaves as if choosing uniformly among 10 options at each step. Perplexity of 100 means 100 effective options — a much less certain model.\n\nCritical limitation: perplexity does not measure correctness. A model that hallucinates fluently produces low-perplexity text that is wrong. This is the single most important interpretation point. Perplexity alone is not merely insufficient for validation — it is dangerous. Its directional signal is actively misleading in the fluent-hallucination failure mode. A declining perplexity trend looks like improvement while accuracy collapses.\n\nPrimary use: as a drift signal over time. Compute perplexity continuously on production outputs and watch for deviation from a deployment-time baseline. Perplexity trending up means output distribution is shifting. Either direction warrants investigation — up suggests domain shift, down suggests possible style collapse or more confident hallucination.\n\nThe parallel in PD modeling is PSI (Population Stability Index). PSI tells you the distributional assumption has shifted. It does not tell you whether predictions are correct. Perplexity works the same way.",
+  "creditRiskParallel": "Perplexity is to LLM evaluation what PSI is to PD modeling. A critical component of ongoing monitoring that tells you the distributional assumption has shifted, not whether the predictions are correct. PSI moving is a trigger to investigate calibration and discrimination separately. Perplexity moving is a trigger to investigate correctness separately. Neither is a standalone quality signal."
+}

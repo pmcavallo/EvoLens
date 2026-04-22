@@ -1,0 +1,28 @@
+{
+  "id": "bertscore",
+  "name": "BERTScore",
+  "fullName": "BERTScore (Zhang et al., 2019)",
+  "pillar": "Calibration",
+  "whatItMeasures": "How semantically similar the candidate is to the reference, measured through cosine similarity between contextual word embeddings rather than exact word matches.",
+  "whyItMeasures": "BLEU and ROUGE fail on paraphrase: two sentences can mean the same thing and share almost no words, yet surface metrics declare them unrelated. BERTScore fixes this by comparing what words mean rather than what words are. It runs both texts through BERT, which produces a vector for each word shaped by its surrounding context, then measures how closely each candidate word's meaning matches the closest reference word's meaning. This catches 'approved' matching 'gave consent' and 'merger' matching 'acquisition' — cases surface metrics miss entirely.",
+  "regulatorQuestions": [
+    "Which BERT model produced the embeddings? BERTScore values are model-specific. Scores from BERT-base and RoBERTa-large are not comparable.",
+    "Was baseline rescaling applied? Raw BERTScore clusters around 0.85 for unrelated sentences due to BERT's embedding geometry. Unrescaled numbers are misleading.",
+    "What is the variance across the evaluation set, not just the mean? A mean BERTScore of 0.65 with standard deviation of 0.30 tells a different story than 0.65 ± 0.05.",
+    "How does BERTScore correlate with human judgment on this specific task? Correlation varies: strong for translation and paraphrase detection, weaker for long-form generation.",
+    "What is the reference quality? BERTScore inherits its ceiling from its references. A reference-based metric cannot be better than its references."
+  ],
+  "goodBadValues": {
+    "description": "Values shown are rescaled BERTScore F1 on BERT-base English (baseline ≈ 0.85). Always report the model and whether rescaling was applied.",
+    "ranges": [
+      { "range": "Above 0.70", "interpretation": "Very strong semantic match. Near-paraphrase of the reference." },
+      { "range": "0.40 – 0.70", "interpretation": "Meaningful semantic overlap. Most reference substance captured with some gaps." },
+      { "range": "0.20 – 0.40", "interpretation": "Partial match. Some shared concepts but significant gaps." },
+      { "range": "Below 0.20", "interpretation": "Weak or random match. The candidate is semantically distant from the reference." },
+      { "range": "Negative values", "interpretation": "Below the random baseline. Something is wrong upstream." }
+    ],
+    "caveat": "These ranges are rough guides for rescaled BERT-base scores. Different BERT variants, languages, and tasks produce different scales. Always calibrate against your specific evaluation setup."
+  },
+  "learnMore": "BERTScore (Zhang et al., 2019) replaces string matching with semantic similarity using contextual embeddings. BERT produces a vector for each token that depends on the surrounding sentence — 'bank' gets different vectors in 'river bank' vs. 'investment bank'. This solves both polysemy collapse and context-dependent shading.\n\nThe math has three steps: (1) Precision — for each candidate token, find the most similar reference token by cosine similarity, then average across all candidate tokens. This catches hallucination. (2) Recall — for each reference token, find the most similar candidate token. This catches under-coverage. (3) F1 — the harmonic mean of precision and recall, which punishes imbalance.\n\nBERTScore uses greedy matching (each token picks its best match independently) rather than optimal bipartite matching, for computational simplicity with minimal quality loss.\n\nBaseline rescaling is critical. Random sentence pairs score ~0.85 raw because BERT embeddings cluster in a narrow region of vector space. Rescaling maps that floor to 0.0: rescaled = (raw − baseline) / (1 − baseline). Always use rescaling when reporting.\n\nBERTScore sits in the Calibration pillar alongside BLEU and ROUGE. Together they form layered calibration: BLEU and ROUGE measure surface match, BERTScore measures semantic match.",
+  "creditRiskParallel": "BERTScore is to LLM evaluation what AUC is to PD models. A useful summary statistic, widely cited, interpretable when you know the baseline, but never sufficient on its own. You pair it with calibration diagnostics, drift monitoring, and stratified breakdowns. Same discipline applies."
+}

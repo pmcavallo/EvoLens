@@ -1,0 +1,370 @@
+[
+  {
+    "id": 1,
+    "name": "Near-identical paraphrase",
+    "description": "Same meaning expressed with different words. BLEU low (surface mismatch), BERTScore high (semantic match). Teaches the paraphrase-penalty problem.",
+    "scenario": "paraphrase",
+    "reference": "The board approved the merger unanimously after reviewing the financial projections.",
+    "candidate": "The directors gave their full consent to the acquisition following an examination of the fiscal forecasts.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.016,
+        "brevity_penalty": 1.0,
+        "p1": 0.188,
+        "p2": 0.007,
+        "p3": 0.007,
+        "p4": 0.008
+      },
+      "rouge1": {
+        "precision": 0.188,
+        "recall": 0.273,
+        "f1": 0.222
+      },
+      "rouge2": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "rougeL": {
+        "precision": 0.188,
+        "recall": 0.273,
+        "f1": 0.222
+      },
+      "bertscore": {
+        "precision": 0.92,
+        "recall": 0.91,
+        "f1": 0.915,
+        "precision_rescaled": 0.467,
+        "recall_rescaled": 0.4,
+        "f1_rescaled": 0.433
+      },
+      "perplexity": {
+        "perplexity": 18.3,
+        "avg_log_prob": -2.907,
+        "num_tokens": 15
+      }
+    }
+  },
+  {
+    "id": 2,
+    "name": "Word-order rearrangement",
+    "description": "Identical vocabulary, different word order. BLEU moderate (bigram breaks), BERTScore very high (same meaning). The baseline where surface and semantic metrics agree.",
+    "scenario": "reorder",
+    "reference": "The cat sat on the mat near the window.",
+    "candidate": "Near the window the cat sat on the mat.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.513,
+        "brevity_penalty": 1.0,
+        "p1": 0.778,
+        "p2": 0.625,
+        "p3": 0.429,
+        "p4": 0.333
+      },
+      "rouge1": {
+        "precision": 0.778,
+        "recall": 0.778,
+        "f1": 0.778
+      },
+      "rouge2": {
+        "precision": 0.625,
+        "recall": 0.625,
+        "f1": 0.625
+      },
+      "rougeL": {
+        "precision": 0.556,
+        "recall": 0.556,
+        "f1": 0.556
+      },
+      "bertscore": {
+        "precision": 0.97,
+        "recall": 0.97,
+        "f1": 0.97,
+        "precision_rescaled": 0.8,
+        "recall_rescaled": 0.8,
+        "f1_rescaled": 0.8
+      },
+      "perplexity": {
+        "perplexity": 38.7,
+        "avg_log_prob": -3.656,
+        "num_tokens": 9
+      }
+    }
+  },
+  {
+    "id": 3,
+    "name": "Hallucination case",
+    "description": "Candidate adds content not in the reference. BERTScore Precision drops (hallucinated words have no reference match), Recall stays high (reference content is covered).",
+    "scenario": "hallucination",
+    "reference": "Revenue increased by 12 percent in the third quarter.",
+    "candidate": "Revenue increased by 12 percent in the third quarter, driven primarily by strong performance in the Asian markets and new product launches across all segments.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.273,
+        "brevity_penalty": 1.0,
+        "p1": 0.32,
+        "p2": 0.292,
+        "p3": 0.261,
+        "p4": 0.227
+      },
+      "rouge1": {
+        "precision": 0.32,
+        "recall": 0.889,
+        "f1": 0.471
+      },
+      "rouge2": {
+        "precision": 0.292,
+        "recall": 0.875,
+        "f1": 0.438
+      },
+      "rougeL": {
+        "precision": 0.32,
+        "recall": 0.889,
+        "f1": 0.471
+      },
+      "bertscore": {
+        "precision": 0.88,
+        "recall": 0.96,
+        "f1": 0.918,
+        "precision_rescaled": 0.2,
+        "recall_rescaled": 0.733,
+        "f1_rescaled": 0.453
+      },
+      "perplexity": {
+        "perplexity": 14.7,
+        "avg_log_prob": -2.688,
+        "num_tokens": 24
+      }
+    }
+  },
+  {
+    "id": 4,
+    "name": "Under-coverage case",
+    "description": "Candidate omits key reference content. BERTScore Recall drops (reference words unmatched), Precision stays high (candidate content is accurate).",
+    "scenario": "undercoverage",
+    "reference": "The Federal Reserve raised interest rates by 25 basis points this morning, citing persistent inflation in the housing and services sectors.",
+    "candidate": "The Federal Reserve raised interest rates this morning.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.139,
+        "brevity_penalty": 0.197,
+        "p1": 0.875,
+        "p2": 0.714,
+        "p3": 0.667,
+        "p4": 0.6
+      },
+      "rouge1": {
+        "precision": 0.875,
+        "recall": 0.333,
+        "f1": 0.483
+      },
+      "rouge2": {
+        "precision": 0.714,
+        "recall": 0.25,
+        "f1": 0.37
+      },
+      "rougeL": {
+        "precision": 0.875,
+        "recall": 0.333,
+        "f1": 0.483
+      },
+      "bertscore": {
+        "precision": 0.96,
+        "recall": 0.87,
+        "f1": 0.913,
+        "precision_rescaled": 0.733,
+        "recall_rescaled": 0.133,
+        "f1_rescaled": 0.42
+      },
+      "perplexity": {
+        "perplexity": 11.2,
+        "avg_log_prob": -2.416,
+        "num_tokens": 8
+      }
+    }
+  },
+  {
+    "id": 5,
+    "name": "Completely unrelated sentences",
+    "description": "No content relationship. Raw BERTScore ~0.85, rescaled ~0.00. Teaches why baseline rescaling exists — without it, 0.85 looks like a strong match.",
+    "scenario": "unrelated",
+    "reference": "The quarterly earnings report showed a significant decline in operating margins.",
+    "candidate": "The golden retriever chased butterflies through the meadow on a sunny afternoon.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.02,
+        "brevity_penalty": 1.0,
+        "p1": 0.167,
+        "p2": 0.009,
+        "p3": 0.01,
+        "p4": 0.011
+      },
+      "rouge1": {
+        "precision": 0.167,
+        "recall": 0.182,
+        "f1": 0.174
+      },
+      "rouge2": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "rougeL": {
+        "precision": 0.167,
+        "recall": 0.182,
+        "f1": 0.174
+      },
+      "bertscore": {
+        "precision": 0.855,
+        "recall": 0.852,
+        "f1": 0.854,
+        "precision_rescaled": 0.033,
+        "recall_rescaled": 0.013,
+        "f1_rescaled": 0.027
+      },
+      "perplexity": {
+        "perplexity": 22.1,
+        "avg_log_prob": -3.096,
+        "num_tokens": 10
+      }
+    }
+  },
+  {
+    "id": 6,
+    "name": "Fluent but wrong",
+    "description": "Low perplexity (model is confident) but factually incorrect. Teaches why perplexity alone is dangerous — a fluent hallucination scores well on confidence while being wrong.",
+    "scenario": "fluent_wrong",
+    "reference": "The United States purchased Alaska from Russia in 1867 for $7.2 million.",
+    "candidate": "The United States purchased Alaska from Russia in 1853 for $7.2 million, in a transaction negotiated by Secretary of State Daniel Webster.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.342,
+        "brevity_penalty": 1.0,
+        "p1": 0.455,
+        "p2": 0.381,
+        "p3": 0.3,
+        "p4": 0.263
+      },
+      "rouge1": {
+        "precision": 0.455,
+        "recall": 0.833,
+        "f1": 0.588
+      },
+      "rouge2": {
+        "precision": 0.381,
+        "recall": 0.727,
+        "f1": 0.5
+      },
+      "rougeL": {
+        "precision": 0.455,
+        "recall": 0.833,
+        "f1": 0.588
+      },
+      "bertscore": {
+        "precision": 0.93,
+        "recall": 0.95,
+        "f1": 0.94,
+        "precision_rescaled": 0.533,
+        "recall_rescaled": 0.667,
+        "f1_rescaled": 0.6
+      },
+      "perplexity": {
+        "perplexity": 9.8,
+        "avg_log_prob": -2.282,
+        "num_tokens": 19
+      }
+    }
+  },
+  {
+    "id": 7,
+    "name": "Summary captures gist but loses specifics",
+    "description": "ROUGE-1 decent (key words present), ROUGE-L lower (sentence structure diverges). Teaches the LCS mechanic and how different ROUGE variants capture different properties.",
+    "scenario": "gist_summary",
+    "reference": "The company reported a 15 percent increase in annual revenue, reaching $4.2 billion, while net profit margins expanded to 18 percent from 14 percent the previous year.",
+    "candidate": "Annual revenue rose 15 percent to $4.2 billion. Profit margins improved significantly year over year.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.021,
+        "brevity_penalty": 0.449,
+        "p1": 0.533,
+        "p2": 0.143,
+        "p3": 0.008,
+        "p4": 0.008
+      },
+      "rouge1": {
+        "precision": 0.533,
+        "recall": 0.296,
+        "f1": 0.381
+      },
+      "rouge2": {
+        "precision": 0.143,
+        "recall": 0.077,
+        "f1": 0.1
+      },
+      "rougeL": {
+        "precision": 0.4,
+        "recall": 0.222,
+        "f1": 0.286
+      },
+      "bertscore": {
+        "precision": 0.92,
+        "recall": 0.89,
+        "f1": 0.905,
+        "precision_rescaled": 0.467,
+        "recall_rescaled": 0.267,
+        "f1_rescaled": 0.367
+      },
+      "perplexity": {
+        "perplexity": 16.4,
+        "avg_log_prob": -2.797,
+        "num_tokens": 12
+      }
+    }
+  },
+  {
+    "id": 8,
+    "name": "Mixed quality (one good sentence, one bad)",
+    "description": "Multi-sentence output where the first sentence is accurate and the second is fabricated. All metrics show middling scores, teaching the importance of aggregation discipline.",
+    "scenario": "mixed_quality",
+    "reference": "Global temperatures rose by 1.1 degrees Celsius above pre-industrial levels. The Paris Agreement aims to limit warming to 1.5 degrees.",
+    "candidate": "Global temperatures rose by 1.1 degrees Celsius above pre-industrial levels. Scientists predict that all major cities will be underwater by 2050.",
+    "scores": {
+      "bleu": {
+        "bleu": 0.433,
+        "brevity_penalty": 1.0,
+        "p1": 0.476,
+        "p2": 0.45,
+        "p3": 0.421,
+        "p4": 0.389
+      },
+      "rouge1": {
+        "precision": 0.476,
+        "recall": 0.5,
+        "f1": 0.488
+      },
+      "rouge2": {
+        "precision": 0.45,
+        "recall": 0.474,
+        "f1": 0.462
+      },
+      "rougeL": {
+        "precision": 0.476,
+        "recall": 0.5,
+        "f1": 0.488
+      },
+      "bertscore": {
+        "precision": 0.9,
+        "recall": 0.89,
+        "f1": 0.895,
+        "precision_rescaled": 0.333,
+        "recall_rescaled": 0.267,
+        "f1_rescaled": 0.3
+      },
+      "perplexity": {
+        "perplexity": 19.5,
+        "avg_log_prob": -2.97,
+        "num_tokens": 18
+      }
+    }
+  }
+]

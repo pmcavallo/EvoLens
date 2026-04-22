@@ -1,0 +1,27 @@
+{
+  "id": "bleu",
+  "name": "BLEU",
+  "fullName": "Bilingual Evaluation Understudy",
+  "pillar": "Calibration",
+  "whatItMeasures": "How much of the candidate's wording appears in the reference, measured through overlapping word sequences (n-grams) of length 1 through 4.",
+  "whyItMeasures": "BLEU was built because human evaluation of machine translation was too slow, expensive, and non-reproducible. The core insight: the closer a machine output is to a human reference, the better it is. BLEU uses precision — checking what fraction of the candidate's words are justified by the reference — because in translation, the worst failure mode is hallucination (producing words not supported by the source). Each component of BLEU exists to defeat a specific gaming behavior: clipping stops repetition gaming, n-grams stop word-salad gaming, the brevity penalty stops too-short gaming, and the geometric mean stops smooth-over gaming.",
+  "regulatorQuestions": [
+    "What smoothing variant was used? Raw BLEU zeros out on short texts due to the geometric mean; smoothing is a practical necessity.",
+    "How was the reference text selected? BLEU inherits the quality of its references — a weak reference produces a misleading score.",
+    "Was BLEU computed at the sentence level or corpus level? Sentence-level BLEU is unreliable; corpus-level is where the metric performs as designed.",
+    "What is the n-gram range? Standard is 1 through 4. Deviations change what the score measures.",
+    "Is BLEU the only evaluation metric, or is it paired with recall-oriented and semantic metrics? BLEU alone covers only precision-side calibration."
+  ],
+  "goodBadValues": {
+    "description": "BLEU scores range from 0 to 1 (sometimes reported as 0 to 100). Thresholds depend heavily on task and domain.",
+    "ranges": [
+      { "range": "Above 0.50", "interpretation": "Very strong surface match. Near-paraphrase or close translation." },
+      { "range": "0.30 – 0.50", "interpretation": "Good overlap. Captures most reference content with some variation." },
+      { "range": "0.10 – 0.30", "interpretation": "Partial match. Related but with significant surface differences." },
+      { "range": "Below 0.10", "interpretation": "Weak match. Possibly a paraphrase BLEU cannot detect, or genuinely unrelated." }
+    ],
+    "caveat": "A valid paraphrase using different words can score near zero. Low BLEU does not necessarily mean low quality — it means low surface overlap."
+  },
+  "learnMore": "BLEU was published by Papineni et al. at IBM in 2002. It replaced slow human evaluation with an automated, reproducible number. The metric is built from four defenses against four failure modes: (1) clipped precision caps how many times a repeated word can count as a match, defeating repetition gaming; (2) n-gram expansion from unigrams to 4-grams rewards correct word ordering, defeating word-salad gaming; (3) the brevity penalty applies an exponential penalty when the candidate is shorter than the reference, defeating too-short gaming; (4) the geometric mean combines the four n-gram precision levels so that a zero at any level zeros the final score, defeating smooth-over gaming where a candidate excels at three levels but fails at one.\n\nBLEU uses precision rather than recall because translation's dominant failure mode is hallucination (generating unjustified content), not omission. This is the same design-follows-failure-mode thinking used throughout model risk validation: when false positives are more costly than false negatives, optimize for precision.\n\nLimitations: BLEU penalizes valid paraphrases, does not measure meaning, and is unreliable on short texts. These gaps motivated ROUGE (recall-oriented), BERTScore (semantic matching), and perplexity (reference-free).",
+  "creditRiskParallel": "BLEU is the LLM equivalent of calibration backtesting. You compare model output (the candidate) to ground truth (the reference) and measure overlap, just as you compare predicted PD to observed default rates. The reference is your ground truth surrogate. If the reference is bad, the metric is bad — same as backtesting against a contaminated validation sample."
+}

@@ -1,0 +1,27 @@
+{
+  "id": "rouge",
+  "name": "ROUGE",
+  "fullName": "Recall-Oriented Understudy for Gisting Evaluation",
+  "pillar": "Calibration",
+  "whatItMeasures": "How much of the reference's content the candidate captures, measured through n-gram recall (ROUGE-1, ROUGE-2) and longest common subsequence (ROUGE-L).",
+  "whyItMeasures": "ROUGE was built because BLEU failed on summarization. In translation, the dominant failure is hallucination (saying wrong things), so BLEU uses precision. In summarization, the dominant failure is omission (missing key content), so ROUGE uses recall. Same n-gram counting machinery as BLEU, but the denominator is the reference length instead of the candidate length. This single inversion changes what the metric catches: ROUGE penalizes the candidate for failing to say what the reference said, not for saying things the reference did not.",
+  "regulatorQuestions": [
+    "Which ROUGE variant is being reported — ROUGE-1, ROUGE-2, ROUGE-L, or F1? Each measures a different structural property and they are not interchangeable.",
+    "Is the reported number recall or F1? Many papers report F1 but label it 'ROUGE' without clarifying. Pure recall is gameable by verbosity.",
+    "How many reference summaries were used? Single-reference ROUGE penalizes valid alternative summaries. Multi-reference is the gold standard.",
+    "What is the reference quality? ROUGE inherits its ceiling from its references — weak references produce misleading scores.",
+    "Is ROUGE supplemented with semantic evaluation? ROUGE shares BLEU's surface-matching limitation: it cannot detect semantic equivalence across different word choices."
+  ],
+  "goodBadValues": {
+    "description": "ROUGE scores range from 0 to 1. The three standard variants measure different properties.",
+    "ranges": [
+      { "range": "ROUGE-1 above 0.45", "interpretation": "Strong content coverage. The candidate captures most reference words." },
+      { "range": "ROUGE-2 above 0.20", "interpretation": "Good local fluency. The candidate preserves word pairings from the reference." },
+      { "range": "ROUGE-L above 0.40", "interpretation": "Strong structural preservation. The candidate maintains the reference's sentence flow." },
+      { "range": "ROUGE-1 high, ROUGE-2 low", "interpretation": "Right words, wrong phrasing. Content is there but local fluency is poor." }
+    ],
+    "caveat": "Thresholds vary significantly by task. News summarization typically shows higher ROUGE than dialogue or creative text. Always compare against task-specific baselines."
+  },
+  "learnMore": "ROUGE was published by Chin-Yew Lin in 2004, two years after BLEU. It is structurally BLEU with two deliberate inversions: recall instead of precision, and multiple references by default.\n\nROUGE is a family of metrics, not a single number. ROUGE-1 uses unigram recall to measure content coverage. ROUGE-2 uses bigram recall to measure local fluency. ROUGE-L uses the longest common subsequence (LCS) to measure sentence-level structural preservation. LCS does not require contiguous matches — it tolerates insertions and reorderings while still capturing word order.\n\nThe standard reporting convention is to report all three together: ROUGE-1 (content), ROUGE-2 (local fluency), ROUGE-L (structure). Each catches what the others miss, same discipline as reporting Somers' D, calibration, and PSI together for PD models.\n\nLimitations: Like BLEU, ROUGE cannot detect semantic equivalence (\"raised rates\" vs. \"hiked interest rates\" score poorly). It is also insensitive to factual correctness — swapping \"raised\" for \"lowered\" barely changes the score. These gaps motivated BERTScore.",
+  "creditRiskParallel": "ROUGE's recall orientation maps directly to the fraud detection tradeoff in credit risk. Fraud models optimize for recall because missed fraud is the expensive failure. ROUGE optimizes for recall because missed content is the expensive failure in summarization. Same cost-matrix reasoning, different domain."
+}

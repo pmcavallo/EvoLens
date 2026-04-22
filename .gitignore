@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+env/
+
+# Node
+node_modules/
+dashboard/dist/
+dashboard/.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test / Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build artifacts
+*.tgz
+
+# Private working material — NEVER commit
+# Teaching notes (NotebookLM study material), project plan, feature ideas,
+# build-time briefs, LinkedIn drafts, and any other .md at repo root that
+# is not the README. The README is the only .md file that ships.
+/*.md
+!/README.md
+
+# Explicit list (redundant with the pattern above, kept for clarity)
+/00-PROJECT-PLAN.md
+/01-BLEU.md
+/02-ROUGE.md
+/03-BERTScore.md
+/04-Perplexity.md
+/03-FEATURE-IDEAS.md
+/04-POST-IDEA-THURSDAY-APR-23.md
+/CLAUDE-CODE-BRIEF.md
+
+# Claude Code local settings
+.claude/
