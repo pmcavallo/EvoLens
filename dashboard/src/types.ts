@@ -1,3 +1,10 @@
+export interface ModelInfo {
+  provider: 'openai' | 'anthropic' | 'precomputed';
+  model_requested: string;
+  model_returned: string;
+  timestamp: string;
+}
+
 export interface BleuScores {
   bleu: number;
   brevity_penalty: number;

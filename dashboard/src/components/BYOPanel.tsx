@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { computeBleu, computeRouge } from '../lib/metrics';
-import type { ExampleScores } from '../types';
+import type { ExampleScores, ModelInfo } from '../types';
 
 interface BYOPanelProps {
-  onResults: (scores: Partial<ExampleScores>, reference: string, candidate: string) => void;
+  onResults: (scores: Partial<ExampleScores>, reference: string, candidate: string, modelInfo?: ModelInfo) => void;
 }
 
 export default function BYOPanel({ onResults }: BYOPanelProps) {
@@ -16,8 +16,9 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  async function generateCandidate(): Promise<string> {
+  async function generateCandidate(): Promise<{ text: string; modelInfo: ModelInfo }> {
     if (provider === 'openai') {
+      const modelRequested = 'gpt-4o-mini';
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -25,7 +26,7 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: modelRequested,
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 512,
         }),
@@ -35,8 +36,17 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
         throw new Error(err.error?.message || `OpenAI API error: ${response.status}`);
       }
       const data = await response.json();
-      return data.choices[0].message.content;
+      return {
+        text: data.choices[0].message.content,
+        modelInfo: {
+          provider: 'openai',
+          model_requested: modelRequested,
+          model_returned: data.model || modelRequested,
+          timestamp: new Date().toISOString(),
+        },
+      };
     } else {
+      const modelRequested = 'claude-haiku-4-5-20251001';
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -46,7 +56,7 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
           'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
+          model: modelRequested,
           max_tokens: 512,
           messages: [{ role: 'user', content: prompt }],
         }),
@@ -56,7 +66,15 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
         throw new Error(err.error?.message || `Anthropic API error: ${response.status}`);
       }
       const data = await response.json();
-      return data.content[0].text;
+      return {
+        text: data.content[0].text,
+        modelInfo: {
+          provider: 'anthropic',
+          model_requested: modelRequested,
+          model_returned: data.model || modelRequested,
+          timestamp: new Date().toISOString(),
+        },
+      };
     }
   }
 
@@ -66,6 +84,7 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
 
     try {
       let candidateText = candidate;
+      let modelInfo: ModelInfo | undefined;
 
       if (mode === 'generate') {
         if (!apiKey || !prompt || !reference) {
@@ -73,7 +92,9 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
           setLoading(false);
           return;
         }
-        candidateText = await generateCandidate();
+        const result = await generateCandidate();
+        candidateText = result.text;
+        modelInfo = result.modelInfo;
         setCandidate(candidateText);
       } else {
         if (!reference || !candidateText) {
@@ -90,7 +111,8 @@ export default function BYOPanel({ onResults }: BYOPanelProps) {
       onResults(
         { bleu, rouge1: rouge.rouge1, rouge2: rouge.rouge2, rougeL: rouge.rougeL },
         reference,
-        candidateText
+        candidateText,
+        modelInfo
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
